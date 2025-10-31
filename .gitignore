@@ -1,16 +1,31 @@
-# Compiled class file
+# Maven / Gradle build output
+/target/
+/build/
+
+# VSCode settings folder
+.vscode/
+
+# IDE specific files
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Eclipse specific files
+.metadata
+*.classpath
+*.project
+.settings/
+
+# Logs and temp files
+*.log
+logs/
+*.tmp
+
+# Compiled class files
 *.class
 
-# Log file
-*.log
-
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
+# Package files
 *.jar
 *.war
 *.nar
@@ -19,6 +34,18 @@
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# Java VM crash logs
 hs_err_pid*
 replay_pid*
+
+# Environment variables and credentials (optional, if applicable)
+.env
+application.properties
+application.yml
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Others to ignore
+.mtj.tmp/
