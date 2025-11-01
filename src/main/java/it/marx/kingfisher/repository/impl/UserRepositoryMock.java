@@ -12,10 +12,13 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Repository;
 
 import it.marx.kingfisher.dto.UserDTO;
+import it.marx.kingfisher.exceptions.UserNotFoundException;
 import it.marx.kingfisher.repository.IUserRepository;
 import it.marx.kingfisher.repository.entity.UserEty;
+import lombok.extern.slf4j.Slf4j;
 
 @Repository("userRepositoryMock")
+@Slf4j
 public class UserRepositoryMock implements IUserRepository {
 
     @Override
@@ -60,6 +63,7 @@ public class UserRepositoryMock implements IUserRepository {
             throw new RuntimeException("Errore durante la lettura del file CSV", e);
         }
 
-        return null;
+        log.error("User not found in the database");
+        throw new UserNotFoundException("User not found in the database");
     }
 }
