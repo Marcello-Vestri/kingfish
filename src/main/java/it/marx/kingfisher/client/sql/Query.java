@@ -70,13 +70,13 @@ public class Query {
         private String field;
         private WhereOperator operator;
         private Object value;
-        private LogicalOperator logicalOperator; // AND o OR per collegare alla prossima condizione
+        private LogicalOperator logicalOperator;
 
         public WhereCondition(String field, WhereOperator operator, Object value) {
             this.field = field;
             this.operator = operator;
             this.value = value;
-            this.logicalOperator = LogicalOperator.AND; // default
+            this.logicalOperator = null;
         }
 
         public WhereCondition(String field, WhereOperator operator, Object value, LogicalOperator logicalOperator) {
@@ -90,6 +90,11 @@ public class Query {
     // Metodi di utilità per aggiungere condizioni WHERE
     public Query addWhereEquals(String field, Object value) {
         whereConditions.add(new WhereCondition(field, WhereOperator.EQUALS, value));
+        return this;
+    }
+
+    public Query addWhereEqualsIn(String field, List<?> values) {
+        whereConditions.add(new WhereCondition(field, WhereOperator.EQUALS, values));
         return this;
     }
 
@@ -121,6 +126,20 @@ public class Query {
     public Query addWhereCondition(String field, WhereOperator operator, Object value,
             LogicalOperator logicalOperator) {
         whereConditions.add(new WhereCondition(field, operator, value, logicalOperator));
+        return this;
+    }
+
+    public Query and() {
+        if (!whereConditions.isEmpty()) {
+            whereConditions.get(whereConditions.size() - 1).setLogicalOperator(LogicalOperator.AND);
+        }
+        return this;
+    }
+
+    public Query or() {
+        if (!whereConditions.isEmpty()) {
+            whereConditions.get(whereConditions.size() - 1).setLogicalOperator(LogicalOperator.OR);
+        }
         return this;
     }
 
@@ -179,15 +198,33 @@ public class Query {
                         .append(condition.getOperator().getValue())
                         .append(" ");
 
-                // Aggiungi valore con quote per stringhe
-                if (condition.getValue() instanceof String) {
-                    output.append("\"").append(condition.getValue()).append("\"");
+                // Gestione lista di valori
+                if (condition.getValue() instanceof List) {
+                    List<?> values = (List<?>) condition.getValue();
+                    output.append("(");
+                    for (int j = 0; j < values.size(); j++) {
+                        Object val = values.get(j);
+                        if (val instanceof String) {
+                            output.append("\"").append(val).append("\"");
+                        } else {
+                            output.append(val);
+                        }
+                        if (j < values.size() - 1) {
+                            output.append(", ");
+                        }
+                    }
+                    output.append(")");
                 } else {
-                    output.append(condition.getValue());
+                    // Aggiungi valore con quote per stringhe
+                    if (condition.getValue() instanceof String) {
+                        output.append("\"").append(condition.getValue()).append("\"");
+                    } else {
+                        output.append(condition.getValue());
+                    }
                 }
 
-                // Aggiungi operatore logico se non è l'ultima condizione
-                if (i < whereConditions.size() - 1) {
+                // Aggiungi operatore logico se presente e non è l'ultima condizione
+                if (i < whereConditions.size() - 1 && condition.getLogicalOperator() != null) {
                     output.append(" ")
                             .append(condition.getLogicalOperator().getValue())
                             .append(" ");

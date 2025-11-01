@@ -6,8 +6,8 @@ import it.marx.kingfisher.dto.GameDTO;
 
 public interface IGameClient {
 
-    List<GameDTO> findGames();
+    GameDTO getGame(String id);
 
-    List<GameDTO> findGamesByNameContaining(String name);
+    List<GameDTO> searchGamesByName(String name);
 
 }

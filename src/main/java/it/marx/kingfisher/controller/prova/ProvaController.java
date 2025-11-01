@@ -9,10 +9,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import it.marx.kingfisher.client.IGameClient;
 import it.marx.kingfisher.dto.GameDTO;
-import it.marx.kingfisher.dto.UserDTO;
 import it.marx.kingfisher.repository.IUserRepository;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
+@Slf4j
 public class ProvaController {
 
     private IGameClient gameClient;
@@ -32,11 +33,8 @@ public class ProvaController {
     @GetMapping("/prova")
     public ResponseEntity<List<GameDTO>> prova(String name) {
 
-        List<GameDTO> result = gameClient.findGamesByNameContaining(name);
-        UserDTO user = userRepository.find("ciccioFranco", null);
-
-        System.out.println(user);
-
+        List<GameDTO> result = gameClient.searchGamesByName(name);
+        System.out.println(gameClient.getGame("7677026"));
         return ResponseEntity.ok(result);
     }
 }
