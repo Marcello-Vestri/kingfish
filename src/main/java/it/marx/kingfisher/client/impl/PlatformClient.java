@@ -2,13 +2,14 @@ package it.marx.kingfisher.client.impl;
 
 import java.net.URI;
 import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -74,6 +75,47 @@ public class PlatformClient implements IPlatformClient {
             }
 
             log.warn("Failed to retrieve platform with ID {}. Status: {}", id, response.getStatusCode());
+            return null;
+
+        } catch (RestClientException e) {
+            log.error("Error during getPlatform request", e);
+            throw e;
+        }
+    }
+
+    @Override
+    public List<PlatformEntity> getPlatforms(List<Long> ids) {
+        try {
+            URI url = UriComponentsBuilder
+                    .fromUriString(twitchConfig.getIgdbUrl())
+                    .path(PLATFORMS_PATH)
+                    .build()
+                    .toUri();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Client-ID", twitchClient.getClientId());
+            headers.set("Authorization", "Bearer " + twitchClient.getAccessToken());
+            headers.setContentType(MediaType.TEXT_PLAIN);
+
+            Query query = new Query();
+            query.addWhereEqualsIn("id", ids);
+            final String body = query.buildQuery();
+            log.info("IGDB platform query body: {}", body);
+
+            HttpEntity<String> requestEntity = new HttpEntity<>(body, headers);
+
+            ResponseEntity<PlatformEntity[]> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.POST,
+                    requestEntity,
+                    PlatformEntity[].class);
+
+            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+                PlatformEntity[] platforms = response.getBody();
+                return Arrays.asList(platforms);
+            }
+
+            log.warn("Failed to retrieve platforms. Status: {}", response.getStatusCode());
             return null;
 
         } catch (RestClientException e) {

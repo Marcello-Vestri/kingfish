@@ -1,5 +1,7 @@
 package it.marx.kingfisher.service.impl;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import it.marx.kingfisher.client.IGameClient;
@@ -27,14 +29,13 @@ public class GameService implements IGameService {
     public GameDTO getGame(Long id) {
 
         GameEntity gameEntity = gameClient.getGame(id);
+        List<PlatformEntity> platformEntities = platformClient.getPlatforms(gameEntity.getPlatforms());
 
         GameDTO game = new GameDTO(gameEntity);
-
-        for (Long platformId : gameEntity.getPlatforms()) {
-            PlatformEntity platformEntity = platformClient.getPlatform(platformId);
-            PlatformDTO platform = new PlatformDTO(platformEntity);
-            game.getPlatforms().add(platform);
-        }
+        game.setPlatforms(
+                platformEntities.stream()
+                        .map(PlatformDTO::new)
+                        .toList());
 
         return game;
     }
