@@ -1,5 +1,6 @@
 package it.marx.kingfisher.dto;
 
+import java.time.Instant;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -41,13 +42,13 @@ public class GameDTO {
     private String checksum;
 
     @JsonProperty("created_at")
-    private Long createdAt;
+    private Instant createdAt;
 
     @JsonProperty("updated_at")
-    private Long updatedAt;
+    private Instant updatedAt;
 
     @JsonProperty("first_release_date")
-    private Long firstReleaseDate;
+    private Instant firstReleaseDate;
 
     private Long cover;
 
