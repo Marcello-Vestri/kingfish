@@ -20,7 +20,7 @@ import it.marx.kingfisher.client.IGameClient;
 import it.marx.kingfisher.client.ITwitchClient;
 import it.marx.kingfisher.client.sql.Query;
 import it.marx.kingfisher.config.TwitchConfig;
-import it.marx.kingfisher.dto.igdb.GameDTO;
+import it.marx.kingfisher.dto.igdb.GameEntity;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
@@ -42,7 +42,7 @@ public class GameClient implements IGameClient {
     }
 
     @Override
-    public GameDTO getGame(String id) {
+    public GameEntity getGame(Long id) {
         try {
             URI url = UriComponentsBuilder
                     .fromUriString(twitchConfig.getIgdbUrl())
@@ -54,19 +54,21 @@ public class GameClient implements IGameClient {
             headers.set("Authorization", "Bearer " + twitchClient.getAccessToken());
             headers.setContentType(MediaType.TEXT_PLAIN);
 
-            final String body = String.format("fields *; where id = %s;", id);
-            log.info(body);
+            Query query = new Query();
+            query.addWhereEquals("id", id);
+            final String body = query.buildQuery();
+            log.debug("IGDB game query body: {}", body);
 
             HttpEntity<String> requestEntity = new HttpEntity<>(body, headers);
 
-            ResponseEntity<GameDTO[]> response = restTemplate.exchange(
+            ResponseEntity<GameEntity[]> response = restTemplate.exchange(
                     url,
                     HttpMethod.POST,
                     requestEntity,
-                    GameDTO[].class);
+                    GameEntity[].class);
 
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                GameDTO[] game = response.getBody();
+                GameEntity[] game = response.getBody();
                 if (game.length == 1) {
                     log.info("Successfully retrieved game by ID");
                     log.debug("Game: {}", game[0]);
@@ -85,7 +87,7 @@ public class GameClient implements IGameClient {
     }
 
     @Override
-    public List<GameDTO> getGames(List<String> ids) {
+    public List<GameEntity> getGames(List<String> ids) {
         try {
             URI url = UriComponentsBuilder
                     .fromUriString(twitchConfig.getIgdbUrl())
@@ -106,14 +108,14 @@ public class GameClient implements IGameClient {
 
             HttpEntity<String> requestEntity = new HttpEntity<>(body, headers);
 
-            ResponseEntity<GameDTO[]> response = restTemplate.exchange(
+            ResponseEntity<GameEntity[]> response = restTemplate.exchange(
                     url,
                     HttpMethod.POST,
                     requestEntity,
-                    GameDTO[].class);
+                    GameEntity[].class);
 
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                List<GameDTO> games = Arrays.asList(response.getBody());
+                List<GameEntity> games = Arrays.asList(response.getBody());
 
                 log.info("Successfully retrieved {} games", Integer.toString(games.size()));
                 log.debug("Games: {}", games);
@@ -131,7 +133,7 @@ public class GameClient implements IGameClient {
     }
 
     @Override
-    public List<GameDTO> searchGamesByName(String name) {
+    public List<GameEntity> searchGamesByName(String name) {
         try {
             URI url = UriComponentsBuilder
                     .fromUriString(twitchConfig.getIgdbUrl())
@@ -152,14 +154,14 @@ public class GameClient implements IGameClient {
 
             HttpEntity<String> requestEntity = new HttpEntity<>(body, headers);
 
-            ResponseEntity<GameDTO[]> response = restTemplate.exchange(
+            ResponseEntity<GameEntity[]> response = restTemplate.exchange(
                     url,
                     HttpMethod.POST,
                     requestEntity,
-                    GameDTO[].class);
+                    GameEntity[].class);
 
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                List<GameDTO> games = Arrays.asList(response.getBody());
+                List<GameEntity> games = Arrays.asList(response.getBody());
 
                 log.info("Successfully retrieved {} games", Integer.toString(games.size()));
                 log.debug("Games: {}", games);

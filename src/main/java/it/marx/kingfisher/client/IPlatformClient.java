@@ -1,8 +1,8 @@
 package it.marx.kingfisher.client;
 
-import it.marx.kingfisher.dto.igdb.PlatformDTO;
+import it.marx.kingfisher.dto.igdb.PlatformEntity;
 
 public interface IPlatformClient {
 
-    PlatformDTO getPlatform(Long id);
+    PlatformEntity getPlatform(Long id);
 }

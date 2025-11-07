@@ -4,34 +4,26 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import it.marx.kingfisher.client.IGameClient;
-import it.marx.kingfisher.client.IPlatformClient;
-import it.marx.kingfisher.dto.igdb.PlatformDTO;
+import it.marx.kingfisher.dto.GameDTO;
+import it.marx.kingfisher.service.IGameService;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Slf4j
 public class ProvaController {
 
-    private IGameClient gameClient;
+    private IGameService gameService;
 
-    private IPlatformClient platformClient;
+    public ProvaController(IGameService gameService) {
 
-    public ProvaController(
-            IGameClient gameClient,
-            IPlatformClient platformClient) {
-
-        this.gameClient = gameClient;
-        this.platformClient = platformClient;
+        this.gameService = gameService;
     }
 
     // ENDPOINTS methods
 
     @GetMapping("/prova")
-    public ResponseEntity<PlatformDTO> prova(String name) {
+    public ResponseEntity<GameDTO> prova(String name) {
 
-        // List<GameDTO> games = gameClient.searchGamesByName(name);
-        PlatformDTO platform = platformClient.getPlatform(170L);
-        return ResponseEntity.ok(platform);
+        return ResponseEntity.ok(gameService.getGame(1942L));
     }
 }

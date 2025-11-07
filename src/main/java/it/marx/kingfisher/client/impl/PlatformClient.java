@@ -18,7 +18,7 @@ import it.marx.kingfisher.client.IPlatformClient;
 import it.marx.kingfisher.client.ITwitchClient;
 import it.marx.kingfisher.client.sql.Query;
 import it.marx.kingfisher.config.TwitchConfig;
-import it.marx.kingfisher.dto.igdb.PlatformDTO;
+import it.marx.kingfisher.dto.igdb.PlatformEntity;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
@@ -38,7 +38,7 @@ public class PlatformClient implements IPlatformClient {
     }
 
     @Override
-    public PlatformDTO getPlatform(Long id) {
+    public PlatformEntity getPlatform(Long id) {
         try {
             URI url = UriComponentsBuilder
                     .fromUriString(twitchConfig.getIgdbUrl())
@@ -58,14 +58,14 @@ public class PlatformClient implements IPlatformClient {
 
             HttpEntity<String> requestEntity = new HttpEntity<>(body, headers);
 
-            ResponseEntity<PlatformDTO[]> response = restTemplate.exchange(
+            ResponseEntity<PlatformEntity[]> response = restTemplate.exchange(
                     url,
                     HttpMethod.POST,
                     requestEntity,
-                    PlatformDTO[].class);
+                    PlatformEntity[].class);
 
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                PlatformDTO[] platforms = response.getBody();
+                PlatformEntity[] platforms = response.getBody();
                 if (platforms.length == 1) {
                     log.info("Successfully retrieved platform by ID {}", id);
                     log.debug("Platform: {}", platforms[0]);
