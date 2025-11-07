@@ -8,8 +8,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import it.marx.kingfisher.dto.igdb.GameEntity;
-import it.marx.kingfisher.enums.GameStatusEnum;
-import it.marx.kingfisher.enums.GameTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -46,11 +44,12 @@ public class GameDTO {
     @JsonProperty("parent_game")
     private Long parentGame;
 
+    // TODO: da modificare questi due enum, non lo sono più
     @JsonProperty("game_type")
-    private GameTypeEnum gameType;
+    private Long gameType;
 
     @JsonProperty("game_status")
-    private GameStatusEnum gameStatus;
+    private Long gameStatus;
 
     private Integer status;
 
@@ -138,6 +137,8 @@ public class GameDTO {
         this.id = entity.getId();
         this.name = entity.getName();
         this.platforms = new ArrayList<>();
+        this.gameStatus = entity.getGameStatus();
+        this.gameType = entity.getGameType();
     }
 
 }

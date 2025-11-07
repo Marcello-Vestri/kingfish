@@ -6,8 +6,6 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import it.marx.kingfisher.enums.GameStatusEnum;
-import it.marx.kingfisher.enums.GameTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -51,10 +49,10 @@ public class GameEntity {
     private Long parentGame; // ID of the main game if this is a DLC or part of a bundle
 
     @JsonProperty("game_type")
-    private GameTypeEnum gameType; // Type of game (e.g., base, expansion, etc.)
+    private Long gameType; // Type of game (e.g., base, expansion, etc.)
 
     @JsonProperty("game_status")
-    private GameStatusEnum gameStatus; // Release status of the game (e.g., released, in development)
+    private Long gameStatus; // Release status of the game (e.g., released, in development)
 
     private Integer status; // Deprecated status, use gameStatus instead
 
