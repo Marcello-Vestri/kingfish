@@ -1,4 +1,4 @@
-package it.marx.kingfisher.dto;
+package it.marx.kingfisher.dto.igdb;
 
 import java.time.Instant;
 import java.util.List;

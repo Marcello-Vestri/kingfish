@@ -3,9 +3,7 @@ package it.marx.kingfisher.client.impl;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -22,7 +20,7 @@ import it.marx.kingfisher.client.IGameClient;
 import it.marx.kingfisher.client.ITwitchClient;
 import it.marx.kingfisher.client.sql.Query;
 import it.marx.kingfisher.config.TwitchConfig;
-import it.marx.kingfisher.dto.GameDTO;
+import it.marx.kingfisher.dto.igdb.GameDTO;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
@@ -30,7 +28,6 @@ import lombok.extern.slf4j.Slf4j;
 public class GameClient implements IGameClient {
 
     private static final String GAMES_PATH = "/v4/games";
-    private static final String SEARCH_PATH = "/v4/search";
 
     private ITwitchClient twitchClient;
 

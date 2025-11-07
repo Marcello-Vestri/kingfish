@@ -2,7 +2,7 @@ package it.marx.kingfisher.client;
 
 import java.util.List;
 
-import it.marx.kingfisher.dto.GameDTO;
+import it.marx.kingfisher.dto.igdb.GameDTO;
 
 public interface IGameClient {
 
