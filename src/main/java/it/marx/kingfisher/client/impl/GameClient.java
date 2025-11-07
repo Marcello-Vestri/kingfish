@@ -21,6 +21,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import it.marx.kingfisher.client.IGameClient;
 import it.marx.kingfisher.client.ITwitchClient;
 import it.marx.kingfisher.client.sql.Query;
+import it.marx.kingfisher.config.TwitchConfig;
 import it.marx.kingfisher.dto.GameDTO;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,23 +29,27 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class GameClient implements IGameClient {
 
-    private static final String GAMES_URL = "https://api.igdb.com/v4/games";
-    private static final String SEARCH_URL = "https://api.igdb.com/v4/search";
+    private static final String GAMES_PATH = "/v4/games";
+    private static final String SEARCH_PATH = "/v4/search";
 
     private ITwitchClient twitchClient;
 
+    private final TwitchConfig twitchConfig;
+
     private final RestTemplate restTemplate;
 
-    public GameClient(RestTemplate restTemplate, ITwitchClient twitchClient) {
+    public GameClient(RestTemplate restTemplate, ITwitchClient twitchClient, TwitchConfig twitchConfig) {
         this.restTemplate = restTemplate;
         this.twitchClient = twitchClient;
+        this.twitchConfig = twitchConfig;
     }
 
     @Override
     public GameDTO getGame(String id) {
         try {
             URI url = UriComponentsBuilder
-                    .fromUriString(GAMES_URL)
+                    .fromUriString(twitchConfig.getIgdbUrl())
+                    .path(GAMES_PATH)
                     .build().toUri();
 
             HttpHeaders headers = new HttpHeaders();
@@ -65,15 +70,16 @@ public class GameClient implements IGameClient {
 
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
                 GameDTO[] game = response.getBody();
+                if (game.length == 1) {
+                    log.info("Successfully retrieved game by ID");
+                    log.debug("Game: {}", game[0]);
 
-                log.info("Successfully retrieved game by ID");
-                log.debug("Game: {}", game[0]);
-
-                return game[0];
-            } else {
-                log.warn("Failed to retrieve game. Status: {}", response.getStatusCode());
-                return null;
+                    return game[0];
+                }
             }
+
+            log.warn("Failed to retrieve game. Status: {}", response.getStatusCode());
+            return null;
 
         } catch (RestClientException e) {
             log.error("Error during findGames request", e);
@@ -81,10 +87,12 @@ public class GameClient implements IGameClient {
         }
     }
 
+    @Override
     public List<GameDTO> getGames(List<String> ids) {
         try {
             URI url = UriComponentsBuilder
-                    .fromUriString(GAMES_URL)
+                    .fromUriString(twitchConfig.getIgdbUrl())
+                    .path(GAMES_PATH)
                     .build().toUri();
 
             HttpHeaders headers = new HttpHeaders();
@@ -94,7 +102,7 @@ public class GameClient implements IGameClient {
 
             List<Integer> idsInt = ids.stream().map(x -> Integer.parseInt(x)).toList();
             Query query = new Query();
-            query.addWhereEqualsIn("id", idsInt).setLimit(25);
+            query.addWhereEqualsIn("id", idsInt);
 
             String body = query.buildQuery();
             log.info(body);
@@ -129,7 +137,8 @@ public class GameClient implements IGameClient {
     public List<GameDTO> searchGamesByName(String name) {
         try {
             URI url = UriComponentsBuilder
-                    .fromUriString(SEARCH_URL)
+                    .fromUriString(twitchConfig.getIgdbUrl())
+                    .path(GAMES_PATH)
                     .build().toUri();
 
             HttpHeaders headers = new HttpHeaders();
@@ -138,8 +147,7 @@ public class GameClient implements IGameClient {
             headers.setContentType(MediaType.TEXT_PLAIN);
 
             Query query = new Query();
-            query.addField("id")
-                    .addWhereContains("name", name)
+            query.setSearch(name)
                     .setLimit(25);
 
             String body = query.buildQuery();
@@ -147,22 +155,22 @@ public class GameClient implements IGameClient {
 
             HttpEntity<String> requestEntity = new HttpEntity<>(body, headers);
 
-            ResponseEntity<Map[]> response = restTemplate.exchange(
+            ResponseEntity<GameDTO[]> response = restTemplate.exchange(
                     url,
                     HttpMethod.POST,
                     requestEntity,
-                    Map[].class);
+                    GameDTO[].class);
 
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                List<Map<String, Integer>> searchResult = Arrays.asList(response.getBody());
-                log.info("Successfully retrieved {} games", searchResult.size());
-                log.debug("Games: {}", searchResult);
+                List<GameDTO> games = Arrays.asList(response.getBody());
 
-                List<String> ids = searchResult.stream().map(x -> Integer.toString(x.get("id"))).toList();
-                return this.getGames(ids);
+                log.info("Successfully retrieved {} games", Integer.toString(games.size()));
+                log.debug("Games: {}", games);
+
+                return games;
             } else {
-                log.warn("Failed to retrieve games. Status: {}", response.getStatusCode());
-                return Collections.emptyList();
+                log.warn("Failed to retrieve game. Status: {}", response.getStatusCode());
+                return new ArrayList<>();
             }
 
         } catch (RestClientException e) {

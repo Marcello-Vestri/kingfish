@@ -8,6 +8,7 @@ import lombok.Data;
 @Data
 public class Query {
 
+    private String search;
     private List<String> fields = new ArrayList<>();
     private List<WhereCondition> whereConditions = new ArrayList<>();
     private Integer limit;
@@ -85,6 +86,11 @@ public class Query {
             this.value = value;
             this.logicalOperator = logicalOperator;
         }
+    }
+
+    public Query setSearch(String search) {
+        this.search = search;
+        return this;
     }
 
     // Metodi di utilità per aggiungere condizioni WHERE
@@ -174,6 +180,11 @@ public class Query {
     public String buildQuery() {
         StringBuilder output = new StringBuilder();
 
+        // SEARCH
+        if (search != null && !search.isEmpty()) {
+            output.append("search \"").append(search).append("\"; ");
+        }
+
         // FIELDS
         output.append("fields ");
         if (fields.isEmpty()) {
@@ -215,7 +226,7 @@ public class Query {
                     }
                     output.append(")");
                 } else {
-                    // Aggiungi valore con quote per stringhe
+                    // Aggiungi valore con virgolette per Stringhe
                     if (condition.getValue() instanceof String) {
                         output.append("\"").append(condition.getValue()).append("\"");
                     } else {
@@ -223,11 +234,9 @@ public class Query {
                     }
                 }
 
-                // Aggiungi operatore logico se presente e non è l'ultima condizione
+                // Operatore logico se presente e non ultima condizione
                 if (i < whereConditions.size() - 1 && condition.getLogicalOperator() != null) {
-                    output.append(" ")
-                            .append(condition.getLogicalOperator().getValue())
-                            .append(" ");
+                    output.append(" ").append(condition.getLogicalOperator().getValue()).append(" ");
                 }
             }
             output.append("; ");

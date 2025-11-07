@@ -1,5 +1,6 @@
 package it.marx.kingfisher.controller.prova;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -33,8 +34,7 @@ public class ProvaController {
     @GetMapping("/prova")
     public ResponseEntity<List<GameDTO>> prova(String name) {
 
-        List<GameDTO> result = gameClient.searchGamesByName(name);
-        System.out.println(gameClient.getGame("7677026"));
-        return ResponseEntity.ok(result);
+        List<GameDTO> games = gameClient.searchGamesByName(name);
+        return ResponseEntity.ok(games);
     }
 }
