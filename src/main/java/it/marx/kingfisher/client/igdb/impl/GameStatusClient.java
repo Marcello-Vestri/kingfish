@@ -1,4 +1,4 @@
-package it.marx.kingfisher.client.impl;
+package it.marx.kingfisher.client.igdb.impl;
 
 import java.net.URI;
 import java.util.Arrays;
@@ -15,35 +15,35 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import it.marx.kingfisher.client.IPlatformClient;
-import it.marx.kingfisher.client.ITwitchClient;
-import it.marx.kingfisher.client.sql.Query;
+import it.marx.kingfisher.client.igdb.IGameStatusClient;
+import it.marx.kingfisher.client.igdb.ITwitchClient;
 import it.marx.kingfisher.config.UrlConfig;
-import it.marx.kingfisher.dto.igdb.PlatformEntity;
+import it.marx.kingfisher.dto.igdb.GameStatusEntity;
+import it.marx.kingfisher.query.Query;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-public class PlatformClient implements IPlatformClient {
+public class GameStatusClient implements IGameStatusClient {
 
-    private static final String PLATFORMS_PATH = "/v4/platforms";
+    private static final String GAME_STATUSES_PATH = "/v4/game_statuses";
 
     private final ITwitchClient twitchClient;
     private final UrlConfig urlConfig;
     private final RestTemplate restTemplate;
 
-    public PlatformClient(RestTemplate restTemplate, ITwitchClient twitchClient, UrlConfig twitchConfig) {
+    public GameStatusClient(RestTemplate restTemplate, ITwitchClient twitchClient, UrlConfig twitchConfig) {
         this.restTemplate = restTemplate;
         this.twitchClient = twitchClient;
         this.urlConfig = twitchConfig;
     }
 
     @Override
-    public PlatformEntity getPlatform(Long id) {
+    public GameStatusEntity getGameStatus(Long id) {
         try {
             URI url = UriComponentsBuilder
                     .fromUriString(urlConfig.getIgdbUrl())
-                    .path(PLATFORMS_PATH)
+                    .path(GAME_STATUSES_PATH)
                     .build()
                     .toUri();
 
@@ -55,40 +55,40 @@ public class PlatformClient implements IPlatformClient {
             Query query = new Query();
             query.addWhereEquals("id", id);
             final String body = query.buildQuery();
-            log.info("IGDB platform query body: {}", body);
+            log.info("IGDB game status query body: {}", body);
 
             HttpEntity<String> requestEntity = new HttpEntity<>(body, headers);
 
-            ResponseEntity<PlatformEntity[]> response = restTemplate.exchange(
+            ResponseEntity<GameStatusEntity[]> response = restTemplate.exchange(
                     url,
                     HttpMethod.POST,
                     requestEntity,
-                    PlatformEntity[].class);
+                    GameStatusEntity[].class);
 
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                PlatformEntity[] platforms = response.getBody();
-                if (platforms.length == 1) {
-                    log.info("Successfully retrieved platform by ID {}", id);
-                    log.debug("Platform: {}", platforms[0]);
-                    return platforms[0];
+                GameStatusEntity[] gameStatuses = response.getBody();
+                if (gameStatuses.length == 1) {
+                    log.info("Successfully retrieved game status by ID {}", id);
+                    log.debug("GameStatus: {}", gameStatuses[0]);
+                    return gameStatuses[0];
                 }
             }
 
-            log.warn("Failed to retrieve platform with ID {}. Status: {}", id, response.getStatusCode());
+            log.warn("Failed to retrieve game status with ID {}. Status: {}", id, response.getStatusCode());
             return null;
 
         } catch (RestClientException e) {
-            log.error("Error during getPlatform request", e);
+            log.error("Error during getGameStatus request", e);
             throw e;
         }
     }
 
     @Override
-    public List<PlatformEntity> getPlatforms(List<Long> ids) {
+    public List<GameStatusEntity> getGameStatuses(List<Long> ids) {
         try {
             URI url = UriComponentsBuilder
                     .fromUriString(urlConfig.getIgdbUrl())
-                    .path(PLATFORMS_PATH)
+                    .path(GAME_STATUSES_PATH)
                     .build()
                     .toUri();
 
@@ -100,26 +100,26 @@ public class PlatformClient implements IPlatformClient {
             Query query = new Query();
             query.addWhereEqualsIn("id", ids);
             final String body = query.buildQuery();
-            log.info("IGDB platform query body: {}", body);
+            log.info("IGDB game statuses query body: {}", body);
 
             HttpEntity<String> requestEntity = new HttpEntity<>(body, headers);
 
-            ResponseEntity<PlatformEntity[]> response = restTemplate.exchange(
+            ResponseEntity<GameStatusEntity[]> response = restTemplate.exchange(
                     url,
                     HttpMethod.POST,
                     requestEntity,
-                    PlatformEntity[].class);
+                    GameStatusEntity[].class);
 
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                PlatformEntity[] platforms = response.getBody();
-                return Arrays.asList(platforms);
+                GameStatusEntity[] gameStatuses = response.getBody();
+                return Arrays.asList(gameStatuses);
             }
 
-            log.warn("Failed to retrieve platforms. Status: {}", response.getStatusCode());
+            log.warn("Failed to retrieve game statuses. Status: {}", response.getStatusCode());
             return null;
 
         } catch (RestClientException e) {
-            log.error("Error during getPlatform request", e);
+            log.error("Error during getGameStatuses request", e);
             throw e;
         }
     }

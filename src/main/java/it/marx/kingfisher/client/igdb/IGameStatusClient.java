@@ -1,4 +1,4 @@
-package it.marx.kingfisher.client;
+package it.marx.kingfisher.client.igdb;
 
 import java.util.List;
 

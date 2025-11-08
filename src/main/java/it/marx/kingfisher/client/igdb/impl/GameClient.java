@@ -1,4 +1,4 @@
-package it.marx.kingfisher.client.impl;
+package it.marx.kingfisher.client.igdb.impl;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -16,11 +16,11 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import it.marx.kingfisher.client.IGameClient;
-import it.marx.kingfisher.client.ITwitchClient;
-import it.marx.kingfisher.client.sql.Query;
+import it.marx.kingfisher.client.igdb.IGameClient;
+import it.marx.kingfisher.client.igdb.ITwitchClient;
 import it.marx.kingfisher.config.UrlConfig;
 import it.marx.kingfisher.dto.igdb.GameEntity;
+import it.marx.kingfisher.query.Query;
 import lombok.extern.slf4j.Slf4j;
 
 @Component

@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import it.marx.kingfisher.client.IGameClient;
-import it.marx.kingfisher.client.IGameStatusClient;
-import it.marx.kingfisher.client.IPlatformClient;
+import it.marx.kingfisher.client.igdb.IGameClient;
+import it.marx.kingfisher.client.igdb.IGameStatusClient;
+import it.marx.kingfisher.client.igdb.IPlatformClient;
 import it.marx.kingfisher.dto.GameDTO;
 import it.marx.kingfisher.dto.GameStatusDTO;
 import it.marx.kingfisher.dto.PlatformDTO;
@@ -45,6 +45,16 @@ public class GameService implements IGameService {
                         .toList());
 
         return game;
+    }
+
+    @Override
+    public List<GameDTO> searchGames(String name) {
+
+        List<GameEntity> gameEntities = gameClient.searchGamesByName(name);
+
+        List<GameDTO> games = gameEntities.stream().map(GameDTO::new).toList();
+
+        return games;
     }
 
 }

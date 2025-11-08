@@ -1,4 +1,4 @@
-package it.marx.kingfisher.client.impl;
+package it.marx.kingfisher.client.igdb.impl;
 
 import java.net.URI;
 
@@ -14,7 +14,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import it.marx.kingfisher.client.ITwitchClient;
+import it.marx.kingfisher.client.igdb.ITwitchClient;
 import it.marx.kingfisher.config.UrlConfig;
 import it.marx.kingfisher.dto.response.TokenResponse;
 import jakarta.annotation.PostConstruct;

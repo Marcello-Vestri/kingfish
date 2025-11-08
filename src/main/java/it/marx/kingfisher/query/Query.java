@@ -1,4 +1,4 @@
-package it.marx.kingfisher.client.sql;
+package it.marx.kingfisher.query;
 
 import java.util.ArrayList;
 import java.util.List;

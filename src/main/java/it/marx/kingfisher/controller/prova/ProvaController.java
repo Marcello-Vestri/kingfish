@@ -1,5 +1,7 @@
 package it.marx.kingfisher.controller.prova;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,8 +24,8 @@ public class ProvaController {
     // ENDPOINTS methods
 
     @GetMapping("/prova")
-    public ResponseEntity<GameDTO> prova(String name) {
+    public ResponseEntity<List<GameDTO>> prova(String name) {
 
-        return ResponseEntity.ok(gameService.getGame(1942L));
+        return ResponseEntity.ok(gameService.searchGames(name));
     }
 }
