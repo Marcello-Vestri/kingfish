@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import it.marx.kingfisher.client.ITwitchClient;
+import it.marx.kingfisher.config.UrlConfig;
 import it.marx.kingfisher.dto.response.TokenResponse;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TwitchClient implements ITwitchClient {
 
-    private static final String TOKEN_URL = "https://id.twitch.tv/oauth2/token";
+    private static final String TOKEN_PATH = "/oauth2/token";
 
     @Value("${twitch.client.id}")
     private String clientId;
@@ -35,9 +36,11 @@ public class TwitchClient implements ITwitchClient {
     private Long expiresAt;
 
     private final RestTemplate restTemplate;
+    private final UrlConfig urlConfig;
 
-    public TwitchClient(RestTemplate restTemplate) {
+    public TwitchClient(RestTemplate restTemplate, UrlConfig urlConfig) {
         this.restTemplate = restTemplate;
+        this.urlConfig = urlConfig;
     }
 
     @PostConstruct
@@ -48,7 +51,8 @@ public class TwitchClient implements ITwitchClient {
     public void authenticateClient() {
         try {
             URI url = UriComponentsBuilder
-                    .fromUriString(TOKEN_URL)
+                    .fromUriString(urlConfig.getTwitchUrl())
+                    .path(TOKEN_PATH)
                     .queryParam("client_id", clientId)
                     .queryParam("client_secret", clientSecret)
                     .queryParam("grant_type", "client_credentials")

@@ -19,7 +19,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import it.marx.kingfisher.client.IGameClient;
 import it.marx.kingfisher.client.ITwitchClient;
 import it.marx.kingfisher.client.sql.Query;
-import it.marx.kingfisher.config.TwitchConfig;
+import it.marx.kingfisher.config.UrlConfig;
 import it.marx.kingfisher.dto.igdb.GameEntity;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,21 +31,21 @@ public class GameClient implements IGameClient {
 
     private ITwitchClient twitchClient;
 
-    private final TwitchConfig twitchConfig;
+    private final UrlConfig urlConfig;
 
     private final RestTemplate restTemplate;
 
-    public GameClient(RestTemplate restTemplate, ITwitchClient twitchClient, TwitchConfig twitchConfig) {
+    public GameClient(RestTemplate restTemplate, ITwitchClient twitchClient, UrlConfig twitchConfig) {
         this.restTemplate = restTemplate;
         this.twitchClient = twitchClient;
-        this.twitchConfig = twitchConfig;
+        this.urlConfig = twitchConfig;
     }
 
     @Override
     public GameEntity getGame(Long id) {
         try {
             URI url = UriComponentsBuilder
-                    .fromUriString(twitchConfig.getIgdbUrl())
+                    .fromUriString(urlConfig.getIgdbUrl())
                     .path(GAMES_PATH)
                     .build().toUri();
 
@@ -90,7 +90,7 @@ public class GameClient implements IGameClient {
     public List<GameEntity> getGames(List<String> ids) {
         try {
             URI url = UriComponentsBuilder
-                    .fromUriString(twitchConfig.getIgdbUrl())
+                    .fromUriString(urlConfig.getIgdbUrl())
                     .path(GAMES_PATH)
                     .build().toUri();
 
@@ -136,7 +136,7 @@ public class GameClient implements IGameClient {
     public List<GameEntity> searchGamesByName(String name) {
         try {
             URI url = UriComponentsBuilder
-                    .fromUriString(twitchConfig.getIgdbUrl())
+                    .fromUriString(urlConfig.getIgdbUrl())
                     .path(GAMES_PATH)
                     .build().toUri();
 

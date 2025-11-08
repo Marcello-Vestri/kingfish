@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Configuration
 @Getter
-public class TwitchConfig {
+public class UrlConfig {
 
     @Value("${igdb.url}")
     private String igdbUrl;
